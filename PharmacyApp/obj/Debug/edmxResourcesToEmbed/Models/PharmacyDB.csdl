@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="PharmacyDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Admin">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Fullname" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Username" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Password" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Firm">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="Medicines" Relationship="Self.FK_Medicines_Firms" FromRole="Firms" ToRole="Medicines" />
+  </EntityType>
+  <EntityType Name="Medicine">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="MedicineName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Price" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+    <Property Name="Quantity" Type="Int16" Nullable="false" />
+    <Property Name="Description" Type="String" MaxLength="300" FixedLength="false" Unicode="true" />
+    <Property Name="IsReceipt" Type="Boolean" Nullable="false" />
+    <Property Name="ProDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="ExperienceDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="Barcode" Type="String" MaxLength="20" Unicode="false" FixedLength="false" />
+    <Property Name="FirmID" Type="Int32" />
+    <NavigationProperty Name="Firm" Relationship="Self.FK_Medicines_Firms" FromRole="Medicines" ToRole="Firms" />
+    <NavigationProperty Name="MedicineToTags" Relationship="Self.FK_MedicineToTags_Medicines" FromRole="Medicines" ToRole="MedicineToTags" />
+    <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Medicines" FromRole="Medicines" ToRole="Orders" />
+  </EntityType>
+  <EntityType Name="MedicineToTag">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="MedicineID" Type="Int32" Nullable="false" />
+    <Property Name="TagID" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Medicine" Relationship="Self.FK_MedicineToTags_Medicines" FromRole="MedicineToTags" ToRole="Medicines" />
+    <NavigationProperty Name="Tag" Relationship="Self.FK_MedicineToTags_Tags" FromRole="MedicineToTags" ToRole="Tags" />
+  </EntityType>
+  <EntityType Name="Order">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="MedicineID" Type="Int32" Nullable="false" />
+    <Property Name="WorkerID" Type="Int32" Nullable="false" />
+    <Property Name="PurchaseDate" Type="DateTime" Precision="3" />
+    <Property Name="Amount" Type="Int32" Nullable="false" />
+    <Property Name="Price" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+    <NavigationProperty Name="Medicine" Relationship="Self.FK_Orders_Medicines" FromRole="Orders" ToRole="Medicines" />
+    <NavigationProperty Name="Worker" Relationship="Self.FK_Orders_Workers" FromRole="Orders" ToRole="Workers" />
+  </EntityType>
+  <EntityType Name="Tag">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="MedicineToTags" Relationship="Self.FK_MedicineToTags_Tags" FromRole="Tags" ToRole="MedicineToTags" />
+  </EntityType>
+  <EntityType Name="Worker">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Fullname" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Username" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+    <Property Name="Password" Type="String" MaxLength="200" FixedLength="false" Unicode="true" Nullable="false" />
+    <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Workers" FromRole="Workers" ToRole="Orders" />
+  </EntityType>
+  <Association Name="FK_Medicines_Firms">
+    <End Role="Firms" Type="Self.Firm" Multiplicity="0..1" />
+    <End Role="Medicines" Type="Self.Medicine" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Firms">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Medicines">
+        <PropertyRef Name="FirmID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_MedicineToTags_Medicines">
+    <End Role="Medicines" Type="Self.Medicine" Multiplicity="1" />
+    <End Role="MedicineToTags" Type="Self.MedicineToTag" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Medicines">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="MedicineToTags">
+        <PropertyRef Name="MedicineID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Orders_Medicines">
+    <End Role="Medicines" Type="Self.Medicine" Multiplicity="1" />
+    <End Role="Orders" Type="Self.Order" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Medicines">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Orders">
+        <PropertyRef Name="MedicineID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_MedicineToTags_Tags">
+    <End Role="Tags" Type="Self.Tag" Multiplicity="1" />
+    <End Role="MedicineToTags" Type="Self.MedicineToTag" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Tags">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="MedicineToTags">
+        <PropertyRef Name="TagID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Orders_Workers">
+    <End Role="Workers" Type="Self.Worker" Multiplicity="1" />
+    <End Role="Orders" Type="Self.Order" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Workers">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Orders">
+        <PropertyRef Name="WorkerID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="PharmacyDB" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Admins" EntityType="Self.Admin" />
+    <EntitySet Name="Firms" EntityType="Self.Firm" />
+    <EntitySet Name="Medicines" EntityType="Self.Medicine" />
+    <EntitySet Name="MedicineToTags" EntityType="Self.MedicineToTag" />
+    <EntitySet Name="Orders" EntityType="Self.Order" />
+    <EntitySet Name="Tags" EntityType="Self.Tag" />
+    <EntitySet Name="Workers" EntityType="Self.Worker" />
+    <AssociationSet Name="FK_Medicines_Firms" Association="Self.FK_Medicines_Firms">
+      <End Role="Firms" EntitySet="Firms" />
+      <End Role="Medicines" EntitySet="Medicines" />
+    </AssociationSet>
+    <AssociationSet Name="FK_MedicineToTags_Medicines" Association="Self.FK_MedicineToTags_Medicines">
+      <End Role="Medicines" EntitySet="Medicines" />
+      <End Role="MedicineToTags" EntitySet="MedicineToTags" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Orders_Medicines" Association="Self.FK_Orders_Medicines">
+      <End Role="Medicines" EntitySet="Medicines" />
+      <End Role="Orders" EntitySet="Orders" />
+    </AssociationSet>
+    <AssociationSet Name="FK_MedicineToTags_Tags" Association="Self.FK_MedicineToTags_Tags">
+      <End Role="Tags" EntitySet="Tags" />
+      <End Role="MedicineToTags" EntitySet="MedicineToTags" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Orders_Workers" Association="Self.FK_Orders_Workers">
+      <End Role="Workers" EntitySet="Workers" />
+      <End Role="Orders" EntitySet="Orders" />
+    </AssociationSet>
+    <EntitySet Name="sysdiagrams" EntityType="PharmacyDBModel.sysdiagram" />
+  </EntityContainer>
+  <EntityType Name="sysdiagram">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Name="name" Type="String" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Name="principal_id" Type="Int32" Nullable="false" />
+    <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="version" Type="Int32" />
+    <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+</Schema>
